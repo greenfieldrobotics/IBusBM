@@ -102,13 +102,16 @@ void IBusBM::begin(HardwareSerial &serial, int8_t timerid, int8_t rxPin, int8_t 
   this->len = 0;
   this->chksum = 0;
   this->lchksum = 0;
+  for (uint8_t i = 0; i < PROTOCOL_CHANNELS; i++) {
+    channel[i] = 1500;
+  }
 
   // we need to process the iBUS sensor protocol handler frequently enough (at least once each ms) to ensure the response data
   // from the sensor is sent on time to the receiver
   // if timerid==IBUSBM_NOTIMER the user is responsible for calling the loop function
   this->IBusBMnext = IBusBMfirst;
 
-  if (!IBusBMfirst && timerid != IBUSBM_NOTIMER) {
+  if (!IBusBMfirst && timerid != (void *)IBUSBM_NOTIMER) {
     #ifdef ARDUINO_ARCH_AVR
       // on AVR architectures Timer0 is already used for millis() - we'll just interrupt somewhere in the middle and call the TIMER0_COMPA_vect interrupt
       OCR0A = 0xAF;
